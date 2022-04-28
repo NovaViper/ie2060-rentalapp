@@ -11,6 +11,11 @@ import data.datastorage as data
 import os.path as path
 
 if __name__ == "__main__":
+
+    # if not (path.isfile(data.filepath)):
+    #    data.createDatabase(rental.fields)
+    # else:
+    #    data.loadcreateDatabase()
     if not (path.isfile(data.filepath)):
-        data.createExcel(rental.fields)
+        data.createWorkBook(rental.fields)
     rental.createRentalForm()
