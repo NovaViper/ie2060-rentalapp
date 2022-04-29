@@ -55,5 +55,19 @@ def saveValues(ent):
     wb.save(filepath)
 
 
-def verifyData(ent):
-    print(ent)
+# Input Management
+def verifyForLetters(data):
+    return data.isalpha() or data == "'" or data == "-" or data.isspace()
+
+
+def verifyForNumbers(data):
+    return data.isdigit()
+
+
+def verifyEmail(data):
+    print("")
+
+
+def character_limit(text, length):
+    if len(text.get()) > length:
+        text.set(text.get()[:length])
