@@ -5,7 +5,6 @@
 # Submit Applications
 # Save Application Data
 
-import forms.lease as lease
 import forms.rental as rental
 import data.datastorage as data
 import os.path as path
