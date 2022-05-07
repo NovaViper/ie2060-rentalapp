@@ -63,11 +63,11 @@ def saveValues(ent, window):
 # Main function for verifying the collected data, if false, then verification has failed and show a warning message
 def verifyAll(data):
     #  If any values are empty, skip "Work PN" field because that can be null
-    # if checkForNull(values, 4):
-    #    messagebox.showwarning("Warning", "You haven't filled out all forms")
-    #    return False
+    if checkForNull(data, 4):
+        message.showwarning("Warning", "You haven't filled out all forms")
+        return False
     # Check if the email address field is formatted correctly
-    if not verifyEmail(data[4]):
+    elif not verifyEmail(data[4]):
         message.showwarning(
             "Warning",
             "You have formatted your email address wrong, it should follow the format:\n- The format must be username@company.domain format\n- Username can only contain upper and lowercase letters, numbers, dashes and underscores\n- Company name can only contain upper and lowercase letters and numbers\n- Domain can only contain upper and lowercase letter.\n- Maximum length of the extension is 3.",
@@ -113,10 +113,10 @@ def verifyAll(data):
         )
         return False
     # Check if the Property Street Address is in valid format
-    if not (verifyStreetAddress(data[7])):
+    elif not (verifyStreetAddress(data[7])):
         message.showwarning(
             "Warning",
-            "You have entered an invalid property street address, please check your data. The format should be: Street Address, City, StateInitals, ZipCode",
+            "You have entered an invalid property street address, please check your data. The format should be: Street Address, City, StateInitals ZipCode",
         )
         return False
 
