@@ -16,9 +16,7 @@ def autoSizeColumns(worksheet):
         for cell in col:  # Get cells
             try:  # Necessary to avoid error on empty cells
                 if len(str(cell.value)) > max_length:
-                    max_length = len(
-                        str(cell.value)
-                    )  # Set max length to length of the cell's data
+                    max_length = len(str(cell.value))  # Set max length to length of the cell's data
             except:
                 pass  # Skips empty cells
         adjusted_width = (max_length + 2) * 1.2
@@ -70,62 +68,54 @@ def verifyAll(data):
     elif not verifyEmail(data[4]):
         message.showwarning(
             "Warning",
-            "You have formatted your email address wrong, it should follow the format:\n- The format must be username@company.domain format\n- Username can only contain upper and lowercase letters, numbers, dashes and underscores\n- Company name can only contain upper and lowercase letters and numbers\n- Domain can only contain upper and lowercase letter.\n- Maximum length of the extension is 3.",
-        )
+            "You have formatted your email address wrong, it should follow the format:\n- The format must be username@company.domain format\n- Username can only contain upper and lowercase letters, numbers, dashes and underscores\n- Company name can only contain upper and lowercase letters and numbers\n- Domain can only contain upper and lowercase letter.\n- Maximum length of the extension is 3.")
         return False
 
     # Check if the SSN is the correct length
     elif not (verifyNumLength(data[5], 9, 0)):
         message.showwarning(
             "Warning",
-            "You have entered an invalid social security number, please check your data",
-        )
+            "You have entered an invalid social security number, please check your data")
         return False
 
     # Check if the Drivers License is the correct length
     elif not (verifyNumLength(data[6], 9, 0)):
         message.showwarning(
             "Warning",
-            "You have entered an invalid driver's license number, please check your data",
-        )
+            "You have entered an invalid driver's license number, please check your data")
         return False
 
     # Check if the Phone Numbers are the correct length
     elif not (verifyNumLength(data[2], 10, 0)):
         message.showwarning(
             "Warning",
-            "You have entered an invalid home phone number, please check your data",
-        )
+            "You have entered an invalid home phone number, please check your data")
         return False
 
     elif not (verifyNumLength(data[17], 10, 0)):
         message.showwarning(
             "Warning",
-            "You have entered an invalid landlord phone number, please check your data",
-        )
+            "You have entered an invalid landlord phone number, please check your data")
         return False
 
     # Check if the Work Phone Number is the correct length, accounts for when it is null
     elif not (verifyNumLength(data[3], 10, 1)):
         message.showwarning(
             "Warning",
-            "You have entered an invalid work phone number, please check your data",
-        )
+            "You have entered an invalid work phone number, please check your data")
         return False
     # Check if the Property Street Address is in valid format
     elif not (verifyStreetAddress(data[7])):
         message.showwarning(
             "Warning",
-            "You have entered an invalid property street address, please check your data. The format should be: Street Address, City, StateInitals ZipCode",
-        )
+            "You have entered an invalid property street address, please check your data. The format should be: Street Address, City, StateInitals ZipCode")
         return False
 
     # Check if the Current Street Address is in valid format
     elif not (verifyStreetAddress(data[11])):
         message.showwarning(
             "Warning",
-            "You have entered an invalid current street address, please check your data. The format should be: Street Address, City, StateInitals, ZipCode",
-        )
+            "You have entered an invalid current street address, please check your data. The format should be: Street Address, City, StateInitals, ZipCode")
         return False
     else:  # If everything is valid
         return True
@@ -193,7 +183,6 @@ def checkForNull(fields, skip: int):
         if i == skip:  # Skips a specific index value
             continue
         values.append(elem)
-    # print(values, len(values))
     result = any([isEmptyOrBlank(elem) for elem in values])
     return result
 
