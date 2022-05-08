@@ -1,5 +1,4 @@
-#!/usr/bin/env python3
-# Handles form data and storage
+"""Contains functions for handling data from the forms and database storage"""
 
 from tkinter import messagebox as message
 from openpyxl import *
@@ -8,58 +7,101 @@ import re
 # Filepath for spreadhseet database
 filepath = "workbook.xlsx"
 
-# Auto resize spreadsheet columns
+
 def autoSizeColumns(worksheet):
-    for col in worksheet.columns:  # Get Columns
+    """Auto resizes spreadsheet columns to fit the data within them
+
+    Parameters
+    ----------
+    worksheet : List
+        The spreadsheet which is to be resized
+
+    """
+    for col in worksheet.columns:
         max_length = 0
         column = col[0].column_letter  # Get the column name
-        for cell in col:  # Get cells
+        for cell in col:
             try:  # Necessary to avoid error on empty cells
                 if len(str(cell.value)) > max_length:
-                    max_length = len(str(cell.value))  # Set max length to length of the cell's data
+                    max_length = len(str(cell.value))
             except:
-                pass  # Skips empty cells
+                pass
         adjusted_width = (max_length + 2) * 1.2
         worksheet.column_dimensions[column].width = adjusted_width
 
 
-# Create a new Excel Spreadsheet for storing data
-def createWorkBook(ent):
+def createWorkBook(header):
+    """Create a new Excel Spreadsheet for storing data
+
+    Parameters
+    ----------
+    header : List
+        The list that contains the headers to be added to the first row of the
+        spreadsheet database
+
+    """
     print("Creating database...")
     wb = Workbook()  # Create Workbook
     sheet = wb.active
-    sheet.append(ent)  # Add All Entries to Spreadsheet
-    autoSizeColumns(sheet)  # Resize spreadsheet column
-    wb.save(filepath)  # Save file
+    sheet.append(header)
+    autoSizeColumns(sheet)
+    wb.save(filepath)
     print("Done")
 
 
-# Retreive the values from the form
 def getValues(ent):
-    values = []  # Empty list to put all of the data in
-    temp = []  # Temporary empty list that will be used to store the data from each enry
-    for x in ent:  # Get all entries and save their values!
+    """Retrieves the values from a list
+
+    Parameters
+    ----------
+    ent : List
+        The list in which to retrieve data from
+
+    """
+    values = []
+    temp = []
+    for x in ent:
         temp.append(str(ent[x].get()))
-    values = temp  # Make the values array match the temp array
-    return values  # Return the value
+    values = temp
+    return values
 
 
-# Save the data from the forms (retireved with getValues, checking for empty values
-def saveValues(ent, window):
-    values = getValues(ent)  # Get the values from the entry form
+def saveValues(array, window):
+    """Verifies if data is valid, then saves it to the spreadsheet database if so
+
+    Parameters
+    ----------
+    array : List
+        The list of data to be saved and validated
+    window : TKWindow
+        The form to be closed
+
+    """
+    values = getValues(array)
     if verifyAll(values):  # Run Verification tests, and if pass then continue
         print("Submitting")
-        wb = load_workbook(filepath)  # Open the spreadsheet again
+        wb = load_workbook(filepath)
         sheet = wb.active
-        sheet.append(values)  # Add the values to the sheet
-        autoSizeColumns(sheet)  # Resize the columns to fit the values
-        wb.save(filepath)  # Save the spreadsheet
+        sheet.append(values)
+        autoSizeColumns(sheet)
+        wb.save(filepath)
         print("Done, I will end now")
         window.destroy()  # Kill the form
 
 
-# Main function for verifying the collected data, if false, then verification has failed and show a warning message
 def verifyAll(data):
+    """Verify a list of data
+
+    Main function for verifying the collected data, if any of the verification
+    tests fail, then show a warning message about the specific type of failure
+
+    Parameters
+    ----------
+    data : List
+        The list of data to be verified
+
+    """
+
     #  If any values are empty, skip "Work PN" field because that can be null
     if checkForNull(data, 4):
         message.showwarning("Warning", "You haven't filled out all forms")
@@ -121,18 +163,47 @@ def verifyAll(data):
         return True
 
 
-# Only allow letters. spaces. or symbols such as "'" and "-" to be entered in an Entry field
 def allowOnlyLetters(data):
+    """Only allow letters, spaces, or symbols such as "'" and "-" to be entered in an Entry field
+
+    Parameters
+    ----------
+    data : String
+        The data to be checked
+
+    """
     return data.isalpha() or data == "'" or data == "-" or data.isspace()
 
 
-# Only allow numbers to be entered in an Entry field
 def allowOnlyNumbers(data):
+    """Only allow numbers to be entered in an Entry field
+
+    Parameters
+    ----------
+    data : String
+        The data to be checked
+
+    """
     return data.isdigit()
 
 
-# Verify if data in Entry field is the correct length, if the data is a nullable type (if nullable is 1), then an empty length of 0 is also valid but anything more than 0 but less than the specified length is not valid
 def verifyNumLength(data, length, nullable: int):
+    """Verify if data in Entry field is the correct length
+
+    Verify if data in Entry field is the correct length, if the data is a
+    nullable type (if nullable is 1), then an empty length of 0 is also valid
+    but anything more than 0 but less than the specified length is not valid
+
+    Parameters
+    ----------
+    data : String
+        The data to be checked
+    length : int
+        The length the data should be
+    nullable : int
+        Flag to allow for null values for a specific data entry
+
+    """
     if len(data) == length and nullable == 0:
         return True
     if len(data) == length and nullable == 1:
@@ -143,56 +214,98 @@ def verifyNumLength(data, length, nullable: int):
 
 
 # Verify if data in an Entry field is properly formatted as an email address
-# The format must be username@company.domain format
-# - Username can only contain upper and lowercase letters, numbers, dashes and underscores
-# - Company name can only contain upper and lowercase letters and numbers
-# - Domain can only contain upper and lowercase letters
-# - Maximum length of the extension is 3.
 def verifyEmail(data):
+    """Verify if the data in an Entry field is properly formatted as an email address
+
+    The format must be username@company.domain format
+        - Username can only contain upper and lowercase letters, numbers, dashes and underscores
+        - Company name can only contain upper and lowercase letters and numbers
+        - Domain can only contain upper and lowercase letters
+        - Maximum length of the extension is 3.
+
+    Parameters
+    ----------
+    data : String
+        The data to be processed
+
+    """
     pat = "^[a-zA-Z0-9-_]+@[a-zA-Z0-9]+\.[a-z]{1,3}$"
     if re.match(pat, data):
         return True
     return False
 
 
-# Verify if data in entry field is properly formatted as a street address
 def verifyStreetAddress(data):
-    # Regex for validating the data
-    # Examples:
-    # 123 test st, test city, TT 12345
-    # 859 Squaw Creek Avenue, Baltimore, MD 21206
-    # 3333 Josephine AVE #114, Temecula, CA 99999
-    # 3636 Nicholson Dr, Baton Rouge, LA 70802
-    # 7912 S Willow Drive, Redford, MI 48239
+    """Verify if data in entry field is properly formatted as a street address
+
+    Parameters
+    ----------
+    data : String
+        The data to be processed
+
+    Valid Examples
+    --------
+    123 test st, test city, TT 12345
+    859 Squaw Creek Avenue, Baltimore, MD 21206
+    3333 Josephine AVE #114, Temecula, CA 99999
+    3636 Nicholson Dr, Baton Rouge, LA 70802
+    7912 S Willow Drive, Redford, MI 48239
+
+    """
     regex = r"\d{1,6}\s(?:[A-Za-z0-9#]+\s){0,7}(?:[A-Za-z0-9#]+,)\s*(?:[A-Za-z]+\s){0,3}(?:[A-Za-z]+,)\s*[A-Z]{2}\s*\d{5}"
 
     regex = re.compile(regex)
     match = regex.match(data)
-    if match:  # If the data matches the regex format
+    if match:
         return True
     else:
         return False
 
 
-# Check if an array list fields contains any empty values
 def checkForNull(fields, skip: int):
+    """Check if an array list fields contains any empty values
+
+    Parameters
+    ----------
+    fields : List
+        The list of Entry fields to be checked
+    skip : int
+        The index value to allow for null values
+
+    """
     i = 0  # Used for selecting entries based on its index, used for skipping elements
     values = []
     for elem in fields:
         i += 1  # Start counting up, assosicated the elem's index to a value of i
-        if i == skip:  # Skips a specific index value
+        if i == skip:
             continue
         values.append(elem)
     result = any([isEmptyOrBlank(elem) for elem in values])
     return result
 
 
-# Check if given string is empty or contains only white spaces, for checkForNull function
 def isEmptyOrBlank(msg):
+    """Check if given string is empty or contains only white spaces, for checkForNull function
+
+    Parameters
+    ----------
+    msg :
+        The element to be processed
+
+    """
     return re.search("^\s*$", msg)
 
 
-# Limit a string to a certain length, used for limiting the number of allowed characters in an Entry field
 def characterLimit(text, length):
+    """Limit a string to a certain length, used for limiting the number of allowed characters in an Entry field
+
+    Parameters
+    ----------
+    text : String
+        The text to be processed
+    length : int
+        The length to limit the text to
+
+    """
     if len(text.get()) > length:
         text.set(text.get()[:length])
